@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Module>
+  <ModulePrefs
+     title="Feed TagCloud Generator"
+     title_url="http://blog.as-is.net/"
+     author="Hirotaka Ogawa"
+     />
+  <UserPref
+     name="feed_url"
+     datatype="string"
+     display_name="Feed URL"
+     required="true"
+     {% if default_feed_url %}default_value="{{ default_feed_url }}"{% endif %}
+     />
+  <UserPref
+     name="base_url"
+     datatype="string"
+     display_name="Tag base URL"
+     required="true"
+     {% if default_base_url %}default_value="{{ default_base_url }}"{% endif %}
+     />
+  <UserPref
+     name="order_by"
+     datatype="enum"
+     display_name="Order By"
+     default_value="Tag name">
+    <EnumValue value="Tag name"/>
+    <EnumValue value="Count"/>
+  </UserPref>
+  <UserPref
+     name="link_color"
+     datatype="string"
+     display_name="Link Color"
+     default_value="{% if default_link_color %}{{ default_link_color }}{% else %}#336699{% endif %}"
+     />
+  <UserPref
+     name="background_color"
+     datatype="string"
+     display_name="Background Color"
+     default_value="{% if default_background_color %}{{ default_background_color }}{% else %}#FFFFFF{% endif %}"
+     />
+  <UserPref
+     name="min_font_size"
+     datatype="string"
+     display_name="Min font size (pt)"
+     default_value="{% if default_min_font_size %}{{ default_min_font_size }}{% else %}8{% endif %}"
+     />
+  <UserPref
+     name="max_font_size"
+     datatype="string"
+     display_name="Max font size (pt)"
+     default_value="{% if default_max_font_size %}{{ default_max_font_size }}{% else %}24{% endif %}"
+     />
+  <Content type="html">
+  <![CDATA[
+    <style type="text/css">
+      #content {
+        font-size: small;
+        background-color: __UP_background_color__;
+        margin: 0;
+        padding: .5em;
+        text-align: justify;
+      }
+      a:link, a:visited {
+        color: __UP_link_color__;
+      }
+    </style>
+    <div id="content"></div>
+    <script type="text/javascript">
+      var prefs = new gadgets.Prefs();
+      var feed_tagcloud_url = "{{ json_url }}?url=";
+
+      function makeJSONRequest() {
+        var params = {};
+        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+        var url = feed_tagcloud_url + encodeURIComponent(prefs.getString("feed_url"));
+        gadgets.io.makeRequest(url, response, params);
+      };
+
+      function response(obj) {
+        var base_url = prefs.getString("base_url");
+        var min_font_size = Number(prefs.getString("min_font_size"));
+        var max_font_size = Number(prefs.getString("max_font_size"));
+        var order_by = prefs.getString("order_by");
+
+        var tag_alist = obj.data;
+        var tags = [];
+        var min = 10000;
+        var max = 0;
+        for (var key in tag_alist) {
+          var value = tag_alist[key];
+          min = (value < min) ? value : min;
+          max = (value > max) ? value : max;
+          tags.push({ 'key': key, 'value': value });
+        }
+
+        if (order_by == 'Tag name') {
+          tags.sort(function (a, b) {
+            return a.key.localeCompare(b.key);
+          });
+        } else {
+          tags.sort(function (a, b) {
+            return Number(b.value) - Number(a.value);
+          });
+        }
+
+        var html = '';
+        for (var i = 0; i < tags.length; i++) {
+          var key = tags[i]['key'];
+          var value = tags[i]['value'];
+          var font_size = ((value - min) / (max - min)) * (max_font_size - min_font_size) + min_font_size;
+          html += '<a target="_top" href="' + base_url + encodeURIComponent(key) + '" title="' + value + ' items" rel="tag" style="font-size: ' + font_size + 'pt">' + key + '</a> ';
+        }
+        document.getElementById('content').innerHTML = html;
+      };
+
+      gadgets.util.registerOnLoadHandler(makeJSONRequest);
+    </script>
+  ]]>
+  </Content>
+</Module>

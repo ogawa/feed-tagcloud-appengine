@@ -1,0 +1,8 @@
+application: feed-tagcloud-appengine
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: .*
+  script: feed_tagcloud.py
