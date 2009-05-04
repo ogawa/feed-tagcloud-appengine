@@ -83,7 +83,7 @@ def main():
   application = webapp.WSGIApplication([
       ('/', FeedTagCloudHandler),
       ('/json', FeedTagCloudJsonHandler),
-      ], debug=True)
+      ], debug=False)
   run_wsgi_app(application)
 
 if __name__ == '__main__':
