@@ -28,6 +28,14 @@
     <EnumValue value="Count"/>
   </UserPref>
   <UserPref
+     name="algorithm"
+     datatype="enum"
+     display_name="Algorithm"
+     default_value="Linear">
+    <EnumValue value="Linear"/>
+    <EnumValue value="Logarithmic"/>
+  </UserPref>
+  <UserPref
      name="link_color"
      datatype="string"
      display_name="Link Color"
@@ -78,10 +86,11 @@
       };
 
       function response(obj) {
-        var base_url = prefs.getString("base_url");
+        var base_url      = prefs.getString("base_url");
         var min_font_size = Number(prefs.getString("min_font_size"));
         var max_font_size = Number(prefs.getString("max_font_size"));
-        var order_by = prefs.getString("order_by");
+        var order_by      = prefs.getString("order_by");
+        var algorithm     = prefs.getString("algorithm");
 
         var tag_alist = obj.data;
         var tags = [];
@@ -104,11 +113,22 @@
           });
         }
 
+	var weight_func;
+	if (algorithm == 'Linear') {
+	  weight_func = function (value) {
+	    return (value - min) / (max - min);
+	  };
+	} else {
+	  weight_func = function (value) {
+	    return (Math.log(value) - Math.log(min)) / (Math.log(max) - Math.log(min));
+	  };
+	}
+
         var html = '';
         for (var i = 0; i < tags.length; i++) {
           var key = tags[i]['key'];
           var value = tags[i]['value'];
-          var font_size = ((value - min) / (max - min)) * (max_font_size - min_font_size) + min_font_size;
+          var font_size = weight_func(value) * (max_font_size - min_font_size) + min_font_size;
           html += '<a target="_top" href="' + base_url + encodeURIComponent(key) + '" title="' + value + ' items" rel="tag" style="font-size: ' + font_size + 'pt">' + key + '</a> ';
         }
         document.getElementById('content').innerHTML = html;
