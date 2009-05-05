@@ -4,8 +4,8 @@
 import os
 import logging
 import feedparser
-import json
 import datetime
+from django.utils import simplejson
 from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
@@ -50,7 +50,8 @@ class FeedTagCloudJsonHandler(webapp.RequestHandler):
           tag_cloud[tag_name] += 1
         else:
           tag_cloud[tag_name] = 1
-    json_text = json.write(tag_cloud)
+
+    json_text = simplejson.dumps(tag_cloud, ensure_ascii=False)
     try:
       if cache:
         cache.json = json_text
@@ -75,9 +76,10 @@ class FeedTagCloudHandler(webapp.RequestHandler):
       'default_feed_url': 'http://blog.as-is.net/feeds/posts/default?max-results=50&amp;redirect=false',
       'default_base_url': 'http://blog.as-is.net/search/label/',
       }
-    self.response.headers['Content-Type'] = 'text/xml; charset=utf-8'
     path = os.path.join(os.path.dirname(__file__), 'feed_tagcloud.xml')
-    self.response.out.write(template.render(path, params))
+    tmpl = template.render(path, params)
+    self.response.headers['Content-Type'] = 'text/xml; charset=utf-8'
+    self.response.out.write(tmpl)
 
 def main():
   application = webapp.WSGIApplication([
