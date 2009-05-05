@@ -44,6 +44,8 @@ class FeedTagCloudJsonHandler(webapp.RequestHandler):
 
     tag_cloud = {}
     for entry in feed.entries:
+      if not entry.has_key('tags'):
+        continue
       for tag in entry.tags:
         tag_name = tag.term
         if tag_cloud.has_key(tag_name):
