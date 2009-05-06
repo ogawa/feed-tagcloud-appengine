@@ -96,40 +96,47 @@
         var tags = [];
         var min = 10000;
         var max = 0;
-        for (var key in tag_alist) {
-          var value = tag_alist[key];
-          min = (value < min) ? value : min;
-          max = (value > max) ? value : max;
-          tags.push({ 'key': key, 'value': value });
+        for (var tag in tag_alist) {
+          var count = tag_alist[tag];
+          min = (count < min) ? count : min;
+          max = (count > max) ? count : max;
+          tags.push({ 'tag': tag, 'count': count });
         }
 
         if (order_by == 'Tag name') {
           tags.sort(function (a, b) {
-            return a.key.localeCompare(b.key);
+            return a.tag.localeCompare(b.tag);
           });
         } else {
           tags.sort(function (a, b) {
-            return Number(b.value) - Number(a.value);
+            return Number(b.count) - Number(a.count);
           });
         }
 
 	var weight_func;
 	if (algorithm == 'Linear') {
-	  weight_func = function (value) {
-	    return (value - min) / (max - min);
+	  weight_func = function (count) {
+	    return (count - min) / (max - min);
 	  };
 	} else {
-	  weight_func = function (value) {
-	    return (Math.log(value) - Math.log(min)) / (Math.log(max) - Math.log(min));
+	  weight_func = function (count) {
+	    return (Math.log(count) - Math.log(min)) / (Math.log(max) - Math.log(min));
 	  };
 	}
 
         var html = '';
         for (var i = 0; i < tags.length; i++) {
-          var key = tags[i]['key'];
-          var value = tags[i]['value'];
-          var font_size = weight_func(value) * (max_font_size - min_font_size) + min_font_size;
-          html += '<a target="_top" href="' + base_url + encodeURIComponent(key) + '" title="' + value + ' items" rel="tag" style="font-size: ' + font_size + 'pt">' + key + '</a> ';
+          var tag = tags[i]['tag'];
+          var count = tags[i]['count'];
+          var font_size = weight_func(count) * (max_font_size - min_font_size) + min_font_size;
+          var title = (count < 2) ? count + ' item' : count + ' items';
+
+          var str = '<a target="_top" href="%(url)" title="%(title)" rel="tag" style="font-size: %(font_size)pt">%(tag)</a> ';
+          str = str.replace('%(url)', base_url + encodeURIComponent(tag));
+          str = str.replace('%(title)', title);
+          str = str.replace('%(font_size)', font_size);
+          str = str.replace('%(tag)', tag);
+          html += str;
         }
         document.getElementById('content').innerHTML = html;
       };
