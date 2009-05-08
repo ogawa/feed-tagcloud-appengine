@@ -4,5 +4,9 @@ runtime: python
 api_version: 1
 
 handlers:
+- url: /locale
+  static_dir: locale
+  expiration: 7d
+
 - url: .*
   script: feed_tagcloud.py

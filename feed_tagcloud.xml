@@ -1,62 +1,67 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Module>
   <ModulePrefs
-     title="Feed TagCloud Generator"
-     title_url="http://blog.as-is.net/"
+     title="__MSG_gadget_title__"
+     description="__MSG_gadget_description__"
      author="Hirotaka Ogawa"
-     />
+     author_email="hirotaka.ogawa@gmail.com"
+     author_link="http://blog.as-is.net/"
+     >
+    <Locale messages="{{ locale_url }}/ALL_ALL.xml" />
+    <Locale lang="ja" messages="{{ locale_url }}/ja_ALL.xml" />
+  </ModulePrefs>
   <UserPref
      name="feed_url"
      datatype="string"
-     display_name="Feed URL"
+     display_name="__MSG_feed_url__"
      required="true"
      {% if default_feed_url %}default_value="{{ default_feed_url }}"{% endif %}
      />
   <UserPref
      name="base_url"
      datatype="string"
-     display_name="Tag base URL"
+     display_name="__MSG_base_url__"
      required="true"
      {% if default_base_url %}default_value="{{ default_base_url }}"{% endif %}
      />
   <UserPref
      name="order_by"
      datatype="enum"
-     display_name="Order By"
+     display_name="__MSG_order_by__"
      default_value="Tag name">
-    <EnumValue value="Tag name"/>
-    <EnumValue value="Count"/>
+    <EnumValue value="Tag name" display_value="__MSG_tag_name__"/>
+    <EnumValue value="Count" display_value="__MSG_count__"/>
   </UserPref>
   <UserPref
      name="algorithm"
      datatype="enum"
-     display_name="Algorithm"
+     display_name="__MSG_algorithm__"
      default_value="Linear">
-    <EnumValue value="Linear"/>
-    <EnumValue value="Logarithmic"/>
+    <EnumValue value="Linear" display_value="__MSG_linear__"/>
+    <EnumValue value="Logarithmic" display_value="__MSG_logarithmic__"/>
   </UserPref>
   <UserPref
      name="link_color"
      datatype="string"
-     display_name="Link Color"
+     display_name="__MSG_link_color__"
      default_value="{% if default_link_color %}{{ default_link_color }}{% else %}#336699{% endif %}"
      />
   <UserPref
      name="background_color"
      datatype="string"
-     display_name="Background Color"
+     display_name="__MSG_background_color__"
      default_value="{% if default_background_color %}{{ default_background_color }}{% else %}#FFFFFF{% endif %}"
      />
   <UserPref
      name="min_font_size"
      datatype="string"
-     display_name="Min font size (pt)"
+     display_name="__MSG_min_font_size__"
      default_value="{% if default_min_font_size %}{{ default_min_font_size }}{% else %}8{% endif %}"
      />
   <UserPref
      name="max_font_size"
      datatype="string"
-     display_name="Max font size (pt)"
+     display_name="__MSG_max_font_size__"
      default_value="{% if default_max_font_size %}{{ default_max_font_size }}{% else %}24{% endif %}"
      />
   <Content type="html">
@@ -73,7 +78,7 @@
         color: __UP_link_color__;
       }
     </style>
-    <div id="content"></div>
+    <div id="content">Loading...</div>
     <script type="text/javascript">
       var prefs = new gadgets.Prefs();
       var feed_tagcloud_url = "{{ json_url }}?url=";

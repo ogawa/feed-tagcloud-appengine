@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import os
 import logging
 import feedparser
@@ -74,6 +73,7 @@ class FeedTagCloudHandler(webapp.RequestHandler):
     if path_url[-1] != '/':
       path_url += '/'
     params = {
+      'locale_url': path_url + 'locale',
       'json_url': path_url + 'json',
       'default_feed_url': 'http://blog.as-is.net/feeds/posts/default?max-results=50&amp;redirect=false',
       'default_base_url': 'http://blog.as-is.net/search/label/',
