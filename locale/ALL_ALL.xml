@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<messagebundle>
+  <msg name="gadget_title">Feed Tag Cloud Generator</msg>
+  <msg name="gadget_description">Feed Tag Cloud Generator allows you to generate Tag/Label Cloud from any versions of Atom/RSS feeds.</msg>
+  <msg name="feed_url">Feed URL</msg>
+  <msg name="base_url">Tag base URL</msg>
+  <msg name="order_by">Order By</msg>
+  <msg name="tag_name">Tag name</msg>
+  <msg name="count">Count</msg>
+  <msg name="algorithm">Algorithm</msg>
+  <msg name="linear">Linear</msg>
+  <msg name="logarithmic">Logarithmic</msg>
+  <msg name="link_color">Link Color</msg>
+  <msg name="background_color">Background Color</msg>
+  <msg name="min_font_size">Min font size (pt)</msg>
+  <msg name="max_font_size">Max font size (pt)</msg>
+</messagebundle>
