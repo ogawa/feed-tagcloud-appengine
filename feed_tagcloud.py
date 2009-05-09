@@ -22,7 +22,7 @@ class FeedTagCloudJsonHandler(webapp.RequestHandler):
 
     cache = None
     try:
-      cache = FeedTagCloudCache.gql('WHERE url = :url', url=feed_url).get()
+      cache = FeedTagCloudCache.gql('WHERE url = :url ORDER BY last_modified DESC', url=feed_url).get()
       if cache:
         expires = cache.last_modified + datetime.timedelta(hours=1)
         if expires > datetime.datetime.now():
