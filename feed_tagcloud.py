@@ -83,20 +83,24 @@ class FeedTagCloudJsonHandler(webapp.RequestHandler):
       self.error(500)
 
 class FeedTagCloudHandler(webapp.RequestHandler):
+  content = ''
+  params = {
+    'default_feed_url': 'http://blog.as-is.net/feeds/posts/default?orderby=published&amp;max-results=50&amp;redirect=false',
+    'default_base_url': 'http://blog.as-is.net/search/label/'
+    }
   def get(self):
-    path_url = self.request.path_url
-    if path_url[-1] != '/':
-      path_url += '/'
-    params = {
-      'locale_url': path_url + 'locale',
-      'json_url': path_url + 'json',
-      'default_feed_url': 'http://blog.as-is.net/feeds/posts/default?max-results=50&amp;redirect=false',
-      'default_base_url': 'http://blog.as-is.net/search/label/',
-      }
-    path = os.path.join(os.path.dirname(__file__), 'feed_tagcloud.xml')
-    tmpl = template.render(path, params)
+    if not self.__class__.content:
+      path_url = self.request.path_url
+      if path_url[-1] != '/':
+        path_url += '/'
+      self.params['locale_url'] = path_url + 'locale'
+      self.params['json_url'] = path_url + 'json'
+      path = os.path.join(os.path.dirname(__file__), 'feed_tagcloud.xml')
+      self.__class__.content = template.render(path, self.params)
+    else:
+      logging.info("Succeeded to reuse template cache")
     self.response.headers['Content-Type'] = 'text/xml; charset=utf-8'
-    self.response.out.write(tmpl)
+    self.response.out.write(self.__class__.content)
 
 def main():
   application = webapp.WSGIApplication([
