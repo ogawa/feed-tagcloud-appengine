@@ -18,7 +18,12 @@ class FeedTagCloudCache(db.Model):
 class FeedTagCloudJsonHandler(webapp.RequestHandler):
   def get(self):
     self.response.headers['Content-Type'] = 'text/javascript; charset=utf-8'
+
     feed_url = self.request.get('url', default_value='')
+    if not feed_url:
+      logging.error('No URL defined')
+      self.error(500)
+      return
 
     cache = None
     try:
@@ -26,7 +31,7 @@ class FeedTagCloudJsonHandler(webapp.RequestHandler):
       if cache:
         expires = cache.last_modified + datetime.timedelta(hours=1)
         if expires > datetime.datetime.now():
-          logging.info("Succeeded to get feed from cache: %s" % feed_url)
+          logging.info('Succeeded to get a feed cache: %s' % feed_url)
 
           self.response.headers.add_header('Expires', expires.strftime('%d %b %Y %H:%M:%S GMT'))
           self.response.out.write(cache.json)
@@ -41,9 +46,9 @@ class FeedTagCloudJsonHandler(webapp.RequestHandler):
 
     try:
       feed = feedparser.parse(feed_url)
-#      if feed.bozo:
-#        raise Exception, "Failed to fetch feed: %s" % feed_url
-      logging.info("Succeeded to parse feed: %s" % feed_url)
+      if feed.bozo:
+        raise Exception, 'Failed to fetch feed: %s' % feed_url
+      logging.info('Succeeded to parse feed: %s' % feed_url)
 
       tag_cloud = {}
       for entry in feed.entries:
@@ -58,20 +63,23 @@ class FeedTagCloudJsonHandler(webapp.RequestHandler):
       json_text = simplejson.dumps(tag_cloud, ensure_ascii=False)
     except Exception, e:
       logging.error(e)
-      logging.info("Failed to parse feed: %s" % feed_url)
+      logging.info('Failed to parse feed: %s' % feed_url)
       pass
 
-#    if not json_text:
-#      self.error(500)
-#      return
+    if not json_text:
+      logging.error('No json text defined: %s' % feed_url)
+      self.error(500)
+      return
 
     try:
       if cache:
         cache.json = json_text
+        cache.put()
+        logging.info('Succeeded to update a feed cache: %s' % feed_url)
       else:
         cache = FeedTagCloudCache(url=feed_url, json=json_text)
-      cache.put()
-      logging.info("Succeeded to cache feed: %s" % feed_url)
+        cache.put()
+        logging.info('Succeeded to create a feed cache: %s' % feed_url)
 
       expires = cache.last_modified + datetime.timedelta(hours=1)
       self.response.headers.add_header('Expires', expires.strftime('%d %b %Y %H:%M:%S GMT'))
@@ -79,7 +87,7 @@ class FeedTagCloudJsonHandler(webapp.RequestHandler):
       return
     except Exception, e:
       logging.error(e)
-      logging.info("Failed to cache feed: %s" % feed_url)
+      logging.info('Failed to put a feed cache: %s' % feed_url)
       self.error(500)
 
 class FeedTagCloudHandler(webapp.RequestHandler):
@@ -98,7 +106,7 @@ class FeedTagCloudHandler(webapp.RequestHandler):
       path = os.path.join(os.path.dirname(__file__), 'feed_tagcloud.xml')
       self.__class__.content = template.render(path, self.params)
     else:
-      logging.info("Succeeded to reuse template cache")
+      logging.info('Succeeded to reuse template cache')
     self.response.headers['Content-Type'] = 'text/xml; charset=utf-8'
     self.response.out.write(self.__class__.content)
 

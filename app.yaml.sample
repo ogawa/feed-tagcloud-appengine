@@ -8,5 +8,9 @@ handlers:
   static_dir: locale
   expiration: 7d
 
+- url: /cron
+  script: feed_tagcloud_cron.py
+  login: admin
+
 - url: .*
   script: feed_tagcloud.py

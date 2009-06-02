@@ -1,0 +1,4 @@
+cron:
+- description: daily cleaning
+  url: /cron
+  schedule: every 12 hours
