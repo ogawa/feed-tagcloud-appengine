@@ -78,7 +78,7 @@
         color: __UP_link_color__;
       }
     </style>
-    <div id="content">Loading...</div>
+    <div id="content">__MSG_loading__</div>
     <script type="text/javascript">
       var prefs = new gadgets.Prefs();
       var feed_tagcloud_url = "{{ json_url }}?url=";

@@ -14,4 +14,5 @@
   <msg name="background_color">背景の色</msg>
   <msg name="min_font_size">最小フォントサイズ (pt)</msg>
   <msg name="max_font_size">最大フォントサイズ (pt)</msg>
+  <msg name="loading">読み込み…</msg>
 </messagebundle>
